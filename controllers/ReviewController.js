@@ -94,7 +94,7 @@ controller.getAll = async (req, res) => {
 controller.getOne = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const review = await Review.findOne({ id })
+		const review = await Review.findById(id)
 			.populate('media')
 			.populate('user', '-password')
 			.exec();
@@ -103,7 +103,10 @@ controller.getOne = async (req, res) => {
 		}
 
 		return res.json(review);
-	} catch (err) {}
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({ err: err.message });
+	}
 };
 
 controller.create = async (req, res) => {
@@ -135,13 +138,15 @@ controller.create = async (req, res) => {
 		review.media.push(...mediaLinks);
 
 		review.user = req.user.id;
-		console.log(req.user.id);
 
 		await review.save();
+		await review.populate('media');
+		await review.populate('user', '-password');
 
 		return res.status(201).json(review);
 	} catch (err) {
-		return res.status(500).json({ error: err.message });
+		console.error(err);
+		return res.status(500).json({ error: err });
 	}
 };
 
