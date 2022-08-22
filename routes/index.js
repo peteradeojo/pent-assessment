@@ -28,7 +28,7 @@ module.exports = () => {
 		ReviewController.create
 	);
 
-	router.put('/:id', validateToken, ReviewController.markAsHelpful);
+	router.put('/:id', ReviewController.markAsHelpful);
 
 	return router;
 };
